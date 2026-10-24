@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Kids Challenge: English & IQ</title>
+<style>
+:root{--bg:#10162f;--card:#1d2850;--text:#f7f8ff;--muted:#c5cbea;--accent:#ffd166;--green:#66e3a4;--red:#ff7b86}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;background:radial-gradient(circle at top,#283d78,#10162f 65%);color:var(--text);min-height:100vh;padding:18px}
+main{max-width:850px;margin:auto}.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}.pill{background:#344477;padding:8px 13px;border-radius:999px;font-weight:700}.hero{text-align:center;padding:20px 10px}.hero h1{font-size:clamp(1.8rem,5vw,3rem);margin:8px 0}.hero p{color:var(--muted)}.panel{background:rgba(29,40,80,.96);border:1px solid #43548e;border-radius:22px;padding:clamp(16px,4vw,28px);box-shadow:0 12px 36px #0003;margin:16px 0}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1}.btn{border:0;border-radius:14px;padding:14px 16px;font-size:1rem;font-weight:800;cursor:pointer;background:var(--accent);color:#202746;min-height:50px}.btn.secondary{background:#344477;color:white;border:1px solid #6575b0}.btn:focus,.option:focus{outline:4px solid white;outline-offset:3px}.btn:disabled{opacity:.5;cursor:not-allowed}.hide{display:none!important}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#263663;border-radius:14px;padding:12px;text-align:center}.stat strong{display:block;font-size:1.35rem;color:var(--accent)}.progress{height:10px;background:#344477;border-radius:99px;overflow:hidden;margin:14px 0}.bar{height:100%;background:var(--green);width:0;transition:width .2s}.qtitle{font-size:clamp(1.2rem,3vw,1.65rem);line-height:1.4}.options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.option{background:#2b396c;border:2px solid #5266a4;border-radius:16px;color:white;text-align:left;padding:17px;font-size:1.05rem;cursor:pointer;min-height:64px}.option.correct{border-color:var(--green);background:#17533e}.option.wrong{border-color:var(--red);background:#652e46}.feedback{min-height:58px;line-height:1.5;color:var(--muted);padding-top:12px}.rank{font-size:1.4rem;color:var(--accent);font-weight:900}.small{font-size:.9rem;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:.85rem;padding:18px}@media(max-width:560px){.options{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr 1fr}.stat{padding:9px 4px}.option{min-height:56px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><span class="pill">🚀 SMART KIDS CHALLENGE</span><span class="pill" id="rankPill">Rank: Rookie</span></div>
+  <header class="hero"><div style="font-size:3rem">🧠 📚 🏆</div><h1>English & IQ Adventure</h1><p>Game pembelajaran untuk umur 9 tahun. Jawab soalan, kumpul XP dan naik rank!</p></header>
+  <section class="panel" id="startPanel">
+    <h2>Ready, Player?</h2>
+    <p>Pilih cabaran. Setiap jawapan betul memberi <b>10 XP</b>. Cuba jawab sendiri sebelum minta bantuan!</p>
+    <div class="row"><button class="btn" onclick="startGame('all')">🎮 Main Semua (10 soalan)</button><button class="btn secondary" onclick="startGame('english')">📚 English</button><button class="btn secondary" onclick="startGame('iq')">🧠 IQ & Logic</button></div>
+    <p class="small">Rank: Rookie (0–99 XP) · Bronze (100–249) · Silver (250–499) · Gold (500–799) · Diamond (800+)</p>
+  </section>
+  <section class="panel hide" id="gamePanel">
+    <div class="top"><span class="pill" id="category">Cabaran</span><span class="pill" id="questionCount">Soalan 1/10</span></div>
+    <div class="progress"><div class="bar" id="progressBar"></div></div>
+    <div class="stats"><div class="stat">⭐ XP<strong id="xp">0</strong></div><div class="stat">🔥 Streak<strong id="streak">0</strong></div><div class="stat">✅ Betul<strong id="correctCount">0</strong></div></div>
+    <h2 class="qtitle" id="questionText"></h2>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback" aria-live="polite">Pilih satu jawapan.</div>
+    <div class="row"><button class="btn secondary" id="hintBtn" onclick="showHint()">💡 Petunjuk</button><button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Soalan seterusnya ➜</button></div>
+  </section>
+  <section class="panel hide" id="resultPanel">
+    <div style="text-align:center"><div style="font-size:4rem" id="resultEmoji">🏆</div><h2>Cabaran Selesai!</h2><p id="resultSummary"></p><div class="rank" id="resultRank"></div><p id="resultMessage"></p></div>
+    <div class="row"><button class="btn" onclick="startGame('all')">🔁 Main Lagi</button><button class="btn secondary" onclick="backHome()">🏠 Menu Utama</button></div>
+  </section>
+  <footer>Nota: Ini permainan latihan logik dan bahasa, bukan ujian IQ klinikal rasmi. Semoga berjaya! 🌟</footer>
+</main>
+<script>
+const questions=[
+{cat:'English',type:'English',q:'Choose the correct sentence. (Pilih ayat yang betul.)',o:['She go to school every day.','She goes to school every day.','She going to school every day.','She gone to school every day.'],a:1,why:'Dengan subjek “she”, kata kerja simple present biasanya mendapat akhiran -s: “goes”.',hint:'Perhatikan kata kerja untuk he, she atau it.'},
+{cat:'English',type:'English',q:'What is the opposite of “expensive”?',o:['Cheap','Heavy','Tall','Fast'],a:0,why:'“Cheap” bermaksud murah, iaitu lawan bagi “expensive” (mahal).',hint:'Fikirkan tentang harga barang di kedai.'},
+{cat:'IQ & Logic',type:'IQ',q:'What number comes next? 3, 6, 12, 24, ___',o:['30','36','48','42'],a:2,why:'Setiap nombor didarab 2. Jadi 24 × 2 = 48.',hint:'Bandingkan setiap nombor dengan nombor sebelumnya.'},
+{cat:'English',type:'English',q:'Yesterday, I ___ football with my brother.',o:['play','plays','playing','played'],a:3,why:'“Yesterday” menunjukkan masa lampau. Bentuk past tense bagi play ialah played.',hint:'Cari petunjuk masa lampau dalam ayat.'},
+{cat:'IQ & Logic',type:'IQ',q:'Ali lebih tinggi daripada Ben. Ben lebih tinggi daripada Chong. Siapakah paling rendah?',o:['Ali','Ben','Chong','Tidak dapat ditentukan'],a:2,why:'Ali > Ben > Chong dari segi ketinggian, jadi Chong paling rendah.',hint:'Susun nama daripada paling tinggi kepada paling rendah.'},
+{cat:'English',type:'English',q:'Which of these are animals? Pilih jawapan yang paling tepat.',o:['Tiger, rabbit and dolphin','Pencil, rabbit and dolphin','Tiger, pencil and book','Chair, pencil and tiger'],a:0,why:'Tiger, rabbit dan dolphin semuanya haiwan.',hint:'Fikirkan makhluk hidup, bukan objek.'},
+{cat:'English',type:'English',q:'“Children” is the plural form of “child”. Betul atau salah?',o:['Betul','Salah'],a:0,why:'“Children” ialah bentuk jamak bagi “child”.',hint:'Sesetengah kata nama mempunyai bentuk jamak yang tidak berakhir dengan -s.'},
+{cat:'IQ & Logic',type:'IQ',q:'The number 35 can be divided by 2 with no remainder. Betul atau salah?',o:['Betul','Salah'],a:1,why:'35 ialah nombor ganjil. 35 ÷ 2 = 17 baki 1.',hint:'Periksa digit terakhir untuk mengenal nombor genap atau ganjil.'},
+{cat:'English',type:'English',q:'There ___ three apples on the table.',o:['is','are','am','be'],a:1,why:'“Three apples” ialah jamak, jadi kita menggunakan “are”.',hint:'Adakah apples satu atau lebih daripada satu?'}, 
+{cat:'IQ & Logic',type:'IQ',q:'A box has 4 red balls and 3 blue balls. How many balls are there altogether?',o:['6','7','8','12'],a:1,why:'4 bola merah + 3 bola biru = 7 bola semuanya.',hint:'Gabungkan jumlah bola merah dan bola biru.'}
+];
+let active=[],idx=0,xp=Number(localStorage.getItem('skcXP')||0),streak=0,correct=0,answered=false;
+const $=id=>document.getElementById(id);
+function rank(n=xp){return n>=800?'💎 Diamond':n>=500?'🥇 Gold':n>=250?'🥈 Silver':n>=100?'🥉 Bronze':'🪵 Rookie'}
+function updateTop(){$('rankPill').textContent='Rank: '+rank();$('xp').textContent=xp;$('streak').textContent=streak;$('correctCount').textContent=correct}
+function startGame(mode){active=questions.filter(q=>mode==='all'||(mode==='english'?q.type==='English':q.type==='IQ'));idx=0;streak=0;correct=0;answered=false;$('startPanel').classList.add('hide');$('resultPanel').classList.add('hide');$('gamePanel').classList.remove('hide');updateTop();renderQuestion()}
+function renderQuestion(){answered=false;const q=active[idx];$('category').textContent=q.cat;$('questionCount').textContent=`Soalan ${idx+1}/${active.length}`;$('progressBar').style.width=(idx/active.length*100)+'%';$('questionText').textContent=q.q;$('feedback').textContent='Pilih satu jawapan.';$('hintBtn').disabled=false;$('nextBtn').disabled=true;$('nextBtn').textContent=idx===active.length-1?'Lihat keputusan 🏆':'Soalan seterusnya ➜';$('options').innerHTML='';q.o.forEach((opt,i)=>{const b=document.createElement('button');b.className='option';b.textContent=String.fromCharCode(65+i)+'. '+opt;b.onclick=()=>answer(i);$('options').appendChild(b)});updateTop();$('options').querySelector('button').focus()}
+function answer(n){if(answered)return;answered=true;const q=active[idx],buttons=[...$('options').querySelectorAll('button')];buttons.forEach((b,i)=>{b.disabled=true;if(i===q.a)b.classList.add('correct');if(i===n&&n!==q.a)b.classList.add('wrong')});if(n===q.a){xp+=10;correct++;streak++;$('feedback').textContent='✅ Betul! '+q.why}else{streak=0;$('feedback').textContent='💪 Belum tepat. '+q.why}localStorage.setItem('skcXP',xp);$('progressBar').style.width=((idx+1)/active.length*100)+'%';updateTop();$('nextBtn').disabled=false;$('hintBtn').disabled=true}
+function showHint(){if(!answered)$('feedback').textContent='💡 Petunjuk: '+active[idx].hint}
+function nextQuestion(){if(!answered)return;if(idx<active.length-1){idx++;renderQuestion()}else finish()}
+function finish(){$('gamePanel').classList.add('hide');$('resultPanel').classList.remove('hide');$('progressBar').style.width='100%';$('resultSummary').textContent=`Anda menjawab ${correct} daripada ${active.length} soalan dengan betul. XP keseluruhan: ${xp}.`;$('resultRank').textContent='Rank semasa: '+rank();$('resultEmoji').textContent=correct>=8?'🏆':correct>=5?'🌟':'💪';$('resultMessage').textContent=correct>=8?'Hebat! Teruskan cabaran untuk mengukuhkan kemahiran.':correct>=5?'Bagus. Semak penerangan dan cuba lagi untuk tingkatkan markah.':'Terus berlatih. Kesilapan membantu kita belajar!';updateTop()}
+function backHome(){$('resultPanel').classList.add('hide');$('startPanel').classList.remove('hide')}
+document.addEventListener('keydown',e=>{if($('gamePanel').classList.contains('hide'))return;if(e.key==='Enter'&&answered)nextQuestion()});
+updateTop();
+</script>
+</body>
+</html>
